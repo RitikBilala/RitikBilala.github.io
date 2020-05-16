@@ -45,9 +45,7 @@ async function app() {
       const result = await classifier.predictClass(activation);
 
       const classes = ['A', 'B', 'C'];
-      document.getElementById('console').innerText = `
-        Prediction: ${classes[result.label]}\n
-        Probability: ${result.confidences[result.label]}
+      document.getElementById('console').innerText = `Prediction: ${classes[result.label]}\nProbability: ${result.confidences[result.label]}
       `;
 
       // Dispose the tensor to release the memory.
