@@ -1,0 +1,88 @@
+
+		h1 {
+			text-align: center;
+			margin-top: 5%;
+			margin-bottom: 5%;
+			font-size: 175%;
+
+		}
+		* {
+			font-family: cursive;
+		}
+
+		.first {
+			background-color: pink;
+		}
+
+		.second {
+			background-color: lightblue;
+		}
+
+		.third {
+			background-color: lightgreen;
+		}
+
+@media (min-width: 992px){
+		.menu {
+			margin-left:1.5%;
+			margin-right:1.5%;
+			width: 30%;
+			position:relative;
+			float: left;
+			border:1px solid grey;
+			background-color: lightyellow;
+		}
+	}
+
+@media (max-width: 991px) and (min-width: 768px){
+		.menu {
+				margin-left:1.5%;
+				margin-right:1.5%;
+				width: 45%;
+				position:relative;
+				float: left;
+				border:1px solid grey;
+				background-color: lightyellow;	
+			}
+
+		.last {
+				margin-left:1.5%;
+				margin-right:1.5%;
+				margin-top: 1%;
+				width: 93.5%;
+				position:relative;
+				float: left;
+				border:1px solid grey;
+			}
+
+		}
+
+@media (max-width: 767px){
+		.menu {
+				margin-left:1.5%;
+				margin-right:1.5%;
+				margin-top: 1.5%;
+				width: 95%;
+				position:relative;
+				float: left;
+				border:1px solid grey;
+				background-color: lightyellow;
+
+			}
+		}
+
+
+		.title {
+			font-size: 125%;
+			position:relative;
+			float: right;
+			width:45%;
+			border:1px solid black;
+			text-align: center;
+		}
+
+
+		.content {
+			padding: 10px 10px 5px 10px;
+			clear: both;
+		}
