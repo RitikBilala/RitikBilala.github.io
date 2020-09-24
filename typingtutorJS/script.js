@@ -49,10 +49,8 @@ function spellCheck() {
 
 
     if (textEntered == originText) {
-        reset();
-        setMinimumTime();
         clearInterval(interval);
-        
+        setMinimumTime();
         testWrapper.style.borderColor = "#429890";
     } else {
         if (textEntered == originTextMatch) {
@@ -118,12 +116,15 @@ function setMinimumTime(){
         }
     }
     else {
+
+        if(timer[0]+timer[1]+timer[2] !==0){
         score = {
                     "min": timer[0],
                     "sec": timer[1],
                     "mili": timer[2]
                 }
             localStorage.setItem("score", JSON.stringify(score));
+}
 }
 }
 
