@@ -49,8 +49,10 @@ function spellCheck() {
 
 
     if (textEntered == originText) {
-        clearInterval(interval);
+        reset();
         setMinimumTime();
+        clearInterval(interval);
+        
         testWrapper.style.borderColor = "#429890";
     } else {
         if (textEntered == originTextMatch) {
