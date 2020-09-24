@@ -1,12 +1,15 @@
 $(document).ready(function() {
 
-
-
     $.ajax({url: "article.json", success: function(result){
-    let number = Math.floor((Math.random() * 2) + 1);
-   document.querySelector("#origin-text p").innerHTML = result[`${number}`] ;
+    let number = Math.floor((Math.random() * result.length) );
+    para = result[number][0] ;
+   document.querySelector("#origin-text p").innerHTML = result[number][1] ;
    originText = document.querySelector("#origin-text p").innerHTML;
+   displayHighestScore();
   }});
+
+
+var para
 var event ;
 var originText; 
 const testWrapper = document.querySelector(".test-wrapper");
@@ -84,14 +87,14 @@ function reset() {
     testWrapper.style.borderColor = "grey";
 }
 
-// Event listeners for keyboard input and the reset
+// Event listeners for paraboard input and the reset
 function enablePaste() {
     testArea.removeEventListener("paste", event);
 }
 
 
-testArea.addEventListener("keydown", start, false);
-testArea.addEventListener("keyup", spellCheck, false);
+testArea.addEventListener("paradown", start, false);
+testArea.addEventListener("paraup", spellCheck, false);
 testArea.addEventListener("paste", event =  e => e.preventDefault(), false);
 resetButton.addEventListener("click", reset, false);
 debug.addEventListener("click", enablePaste, false);
@@ -100,9 +103,9 @@ debug.addEventListener("click", enablePaste, false);
 //sets minimum time 
 function setMinimumTime(){
     
-    if(localStorage.getItem("score")!= null){
+    if(localStorage.getItem(para)!= null){
 
-        let score = JSON.parse(localStorage.getItem("score")) ; 
+        let score = JSON.parse(localStorage.getItem(para)) ; 
 
         if ((timer[0]-score["min"])*6000+(timer[1]-score["sec"])*100+(timer[2]-score["mili"])< 0 && timer[0]+timer[1]+timer[2] !==0) {
             
@@ -112,7 +115,7 @@ function setMinimumTime(){
                     "mili": timer[2]
                 }
 
-            localStorage.setItem("score", JSON.stringify(score));
+            localStorage.setItem(para, JSON.stringify(score));
         }
     }
     else {
@@ -123,19 +126,19 @@ function setMinimumTime(){
                     "sec": timer[1],
                     "mili": timer[2]
                 }
-            localStorage.setItem("score", JSON.stringify(score));
+            localStorage.setItem(para, JSON.stringify(score));
 }
 }
 }
 
 //display minimum ime till now 
-(function displayHighestScore() {
-if(localStorage.getItem("score")!= null){
-var min_time = JSON.parse(localStorage.getItem("score"));
+function displayHighestScore() {
+if(localStorage.getItem(para)!= null){
+var min_time = JSON.parse(localStorage.getItem(para));
 min_time = leadingZero(min_time["min"]) + ":" + leadingZero(min_time["sec"]) + ":" + leadingZero(min_time["mili"]);
     minTime.innerHTML = `Minimum Time : ${min_time}`;
 }
 else minTime.innerHTML = 'Start the game !!';
-})();
+}
 
 });

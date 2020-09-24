@@ -1,58 +1,145 @@
-const classifier = knnClassifier.create();
-const webcamElement = document.getElementById('webcam');
-let net;
+$(document).ready(function() {
 
-async function app() {
-  console.log('Loading mobilenet..');
+    $.ajax({
+        url: "article.json",
+        success: function(result) {
+            let number = Math.floor((Math.random() * result.length));
+            para = result[number][0];
+            document.querySelector("#origin-text p").innerHTML = result[number][1];
+            originText = document.querySelector("#origin-text p").innerHTML;
+            displayHighestScore();
+        }
+    });
 
-  // Load the model.
-  net = await mobilenet.load();
-  console.log('Successfully loaded model');
 
-  // Create an object from Tensorflow.js data API which could capture image 
-  // from the web camera as Tensor.
-  const webcam = await tf.data.webcam(webcamElement);
+    var para
+    var event;
+    var originText;
+    const testWrapper = document.querySelector(".test-wrapper");
+    const testArea = document.querySelector("#test-area");
+    const resetButton = document.querySelector("#reset");
+    const theTimer = document.querySelector(".timer");
+    const minTime = document.querySelector(".min_time");
+    const debug = document.querySelector("#debug"); //enabling paste
 
-  // Reads an image from the webcam and associates it with a specific class
-  // index.
-  const addExample = async classId => {
-    // Capture an image from the web camera.
-    const img = await webcam.capture();
 
-    // Get the intermediate activation of MobileNet 'conv_preds' and pass that
-    // to the KNN classifier.
-    const activation = net.infer(img, true);
+    var timer = [0, 0, 0, 0];
+    var interval;
+    var timerRunning = false;
 
-    // Pass the intermediate activation to the classifier.
-    classifier.addExample(activation, classId);
-
-    // Dispose the tensor to release the memory.
-    img.dispose();
-  };
-
-  // When clicking a button, add an example for that class.
-  document.getElementById('class-a').addEventListener('click', () => addExample(0));
-  document.getElementById('class-b').addEventListener('click', () => addExample(1));
-  document.getElementById('class-c').addEventListener('click', () => addExample(2));
-
-  while (true) {
-    if (classifier.getNumClasses() > 0) {
-      const img = await webcam.capture();
-
-      // Get the activation from mobilenet from the webcam.
-      const activation = net.infer(img, 'conv_preds');
-      // Get the most likely class and confidence from the classifier module.
-      const result = await classifier.predictClass(activation);
-
-      const classes = ['A', 'B', 'C'];
-      document.getElementById('console').innerText = `Prediction: ${classes[result.label]}\nProbability: ${result.confidences[result.label]}
-      `;
-
-      // Dispose the tensor to release the memory.
-      img.dispose();
+    // Add leading zero to numbers 9 or below (purely for aesthetics):
+    function leadingZero(time) {
+        if (time <= 9) {
+            time = "0" + time;
+        }
+        return time;
     }
 
-    await tf.nextFrame();
-  }
-}
-app()
+    // Run a standard minute/second/hundredths timer:
+    function runTimer() {
+
+        timer[3]++;
+        timer[0] = Math.floor((timer[3] / 100) / 60);
+        timer[1] = Math.floor((timer[3] / 100) - (timer[0] * 60));
+        timer[2] = Math.floor(timer[3] - (timer[1] * 100) - (timer[0] * 6000));
+
+        currentTime = leadingZero(timer[0]) + ":" + leadingZero(timer[1]) + ":" + leadingZero(timer[2]);
+        theTimer.innerHTML = currentTime;
+
+    }
+
+    // Match the text entered with the provided text on the page:
+    function spellCheck() {
+        let textEntered = testArea.value;
+        let originTextMatch = originText.substring(0, textEntered.length);
+
+
+        if (textEntered == originText) {
+            clearInterval(interval);
+            setMinimumTime();
+            testWrapper.style.borderColor = "#429890";
+        } else {
+            if (textEntered == originTextMatch) {
+                testWrapper.style.borderColor = "#65CCf3";
+            } else {
+                testWrapper.style.borderColor = "#E95D0F";
+            }
+        }
+
+    }
+
+    // Start the timer:
+    function start() {
+        let textEnterdLength = testArea.value.length;
+        if (textEnterdLength === 0 && !timerRunning) {
+            timerRunning = true;
+            interval = setInterval(runTimer, 10);
+        }
+        // console.log(textEnterdLength);
+    }
+
+    // Reset everything:
+    function reset() {
+        clearInterval(interval);
+        interval = null;
+        timer = [0, 0, 0, 0];
+        timerRunning = false;
+
+        testArea.value = "";
+        theTimer.innerHTML = "00:00:00";
+        testWrapper.style.borderColor = "grey";
+    }
+
+    // Event listeners for paraboard input and the reset
+    function enablePaste() {
+        testArea.removeEventListener("paste", event);
+    }
+
+
+    testArea.addEventListener("paradown", start, false);
+    testArea.addEventListener("paraup", spellCheck, false);
+    testArea.addEventListener("paste", event = e => e.preventDefault(), false);
+    resetButton.addEventListener("click", reset, false);
+    debug.addEventListener("click", enablePaste, false);
+
+
+    //sets minimum time 
+    function setMinimumTime() {
+
+        if (localStorage.getItem(para) != null) {
+
+            let score = JSON.parse(localStorage.getItem(para));
+
+            if ((timer[0] - score["min"]) * 6000 + (timer[1] - score["sec"]) * 100 + (timer[2] - score["mili"]) < 0 && timer[0] + timer[1] + timer[2] !== 0) {
+
+                score = {
+                    "min": timer[0],
+                    "sec": timer[1],
+                    "mili": timer[2]
+                }
+
+                localStorage.setItem(para, JSON.stringify(score));
+            }
+        } else {
+
+            if (timer[0] + timer[1] + timer[2] !== 0) {
+                score = {
+                    "min": timer[0],
+                    "sec": timer[1],
+                    "mili": timer[2]
+                }
+                localStorage.setItem(para, JSON.stringify(score));
+            }
+        }
+    }
+
+    //display minimum ime till now 
+    function displayHighestScore() {
+        if (localStorage.getItem(para) != null) {
+            var min_time = JSON.parse(localStorage.getItem(para));
+            min_time = leadingZero(min_time["min"]) + ":" + leadingZero(min_time["sec"]) + ":" + leadingZero(min_time["mili"]);
+            minTime.innerHTML = `Minimum Time : ${min_time}`;
+        } else minTime.innerHTML = 'Start the game !!';
+    }
+
+});
