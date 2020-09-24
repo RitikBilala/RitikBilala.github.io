@@ -90,7 +90,7 @@ function enablePaste() {
 }
 
 
-testArea.addEventListener("input", start, false);
+testArea.addEventListener("keydown", start, false);
 testArea.addEventListener("keyup", spellCheck, false);
 testArea.addEventListener("paste", event =  e => e.preventDefault(), false);
 resetButton.addEventListener("click", reset, false);
