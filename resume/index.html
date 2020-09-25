@@ -10,13 +10,25 @@
     <link rel="stylesheet" href="css/templatemo-style.css" />
     <title>Ritik Bilala</title>
     <link rel = "icon" href = "img/icon.png" type = "image/x-icon">
-    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.js"></script>
+     <script type="text/javascript">
+    $(window).load(function() {
+    // Animate loader off screen
+    $(".se-pre-con").fadeOut("slow");
+    setTimeout(function() {
+    $(".tm-brand-container").slideDown();
+}, 2000);
+
+  });
+    </script>
 <!--
 Mini Profile Template
 https://templatemo.com/tm-530-mini-profile
 -->
   </head>
   <body>
+    <div class="se-pre-con"></div>
     <!-- Welcome Section -->
 
     <section id="tmWelcome" class="parallax-window" data-parallax="scroll" data-image-src="img/mini-profile-bg-01.jpg">
@@ -332,12 +344,8 @@ Recently,I have completed courses on Javascript, OOP, HTML, CSS, Django, ReactJS
         });
       });
     </script>
+   
     <script>
-      setTimeout(function() {
-    $(".tm-brand-container").slideDown();
-}, 2000);
-
-
 $( window).scroll(function() {
   if($( document ).scrollTop()>=130){
     $(".tm-welcome-left").slideDown();
