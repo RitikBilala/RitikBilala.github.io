@@ -1,0 +1,86 @@
+<html>
+  <head>
+    <!-- Load the latest version of TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/knn-classifier"></script>
+    <style>
+  body {
+    background-color: blue;
+    font-size: 2em;
+    color: white;
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    text-align: center;
+  }
+  video {
+    position:absolute;
+    top: 20%;
+    left: 10%;
+  }
+  #button {
+    position: absolute;
+    bottom: 2%;
+    left: 35%;
+
+  }
+  .button {
+    padding: 15px 25px;
+    font-size: 24px;
+    text-align: center;
+    cursor: pointer;
+    outline: none;
+    color: #fff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 9px #999;
+
+  }
+
+  .button:hover {background-color: #3e8e41}
+
+  .button:active {
+    background-color: #3e8e41;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+  }
+
+  #console {
+    text-align: center;
+    width : 30%;
+    font-size: 25px;
+    color: white; 
+    background-color: rgba(255,0,0,.5);
+    position: absolute;
+    top: 8%;
+    left: 35%;
+    border-radius: 4px;
+    z-index: 100;
+    font-family: "Comic Sans MS", cursive, sans-serif
+  }
+  footer {
+    position: fixed;
+    left: 1px;
+    bottom: 10px;
+  }
+  iframe {
+    float: right;
+  }    
+  </style>
+</head>
+  <body>
+    Train your images here and predict in real time
+    <div id="console"></div>
+    <!-- Add an image that we will use to test -->
+    <video autoplay playsinline muted id="webcam" width= 80% height=70%></video>
+    <iframe width="300" height="200" src="https://www.youtube.com/embed/BKPCocDZXio" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <!-- Load index.js after the content of the page -->
+    <div id="button">
+      <button class ="button" id="class-a">Add A</button>
+      <button class ="button" id="class-b">Add B</button>
+      <button class ="button" id="class-c">Add C</button>
+    </div>
+    <script src="index.js"></script>
+  </body>
+  <footer>Ritik.Bilala@gmail.com</footer>
+</html>
