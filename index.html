@@ -20,6 +20,13 @@
 		setTimeout(function() {
 			$(".tm-brand-container").slideDown();
 		}, 2000);
+
+			$(window).scroll(function() {
+		if($(document).scrollTop() >= 200) {
+			$(".tm-welcome-left").slideDown();
+		}
+	});
+
 	});
 	</script>
 	<!--
@@ -51,7 +58,7 @@ https://templatemo.com/tm-530-mini-profile
 					<div class="row h-100">
 						<!-- Welcome Text -->
 						<!-- White transparent bg -->
-						<div class="col-md-7 tm-welcome-left-col">
+						<div class="col-md-7 tm-welcome-left-col d-none d-lg-block ">
 							<div class="tm-welcome-left">
 								<h2 class="tm-welcome-title">Welcome!! To My Portforlio</h2>
 								<p class="pb-0 mb-0"> <strong> Btech. in Mechanical Engineering , IIT Bombay - 2020 Batch [ Cpi 8.9/10 ]</strong>
@@ -64,12 +71,28 @@ https://templatemo.com/tm-530-mini-profile
 								</p> <a class="btn btn-outline-secondary" role="button" target="_blank" href="doc/RitikBilala_2020.pdf">Download Resume</a> </div>
 						</div>
 						<!-- Brown bg -->
-						<div class="col-md-5">
+						<div class="col-md-5 d-none d-lg-block">
 							<div class="tm-welcome-right"> <img src="img/ritik" style="width: 60%;  display: block;margin-left: auto; margin-right: auto; border-radius: 120px;">
-								<p class="mb-0"> Hello, I am looking for full time opportunities in data analysis, machine learning and developer roles. </p> Please feel free to contact.
-								<h3><a href="email:ritik.bilala@gmail.com" class="btn btn-info">Ritik.Bilala@gmail.com</a>
-   <a href="tel:8291339549" class="btn btn-info">(+91)-8291339549</a></h3> <a class="btn btn-info" role="button" target="_blank" href="doc/RitikBilala_2020.pdf">Download Resume</a> </div>
+								<p class="mb-0"> Hello, I am looking for full time opportunities in data analysis, machine learning and developer roles.</p> Please feel free to contact.<a class="btn btn-secondary" role="button" target="_blank" href="doc/RitikBilala_2020.pdf">Download Resume</a>
+								<h3 class="mt-3"><a href="mailto:ritik.bilala@gmail.com" class="btn btn-info">Ritik.Bilala@gmail.com</a>
+   <a href="tel:8291339549" class="btn btn-info">(+91)-8291339549</a></h3> </div>
 						</div>
+
+												<div class="col-md-12 d-lg-none">
+							<div class="tm-welcome-right pb-0"> <img src="img/ritik" style="width: 60%;  display: block;margin-left: auto; margin-right: auto; border-radius: 120px;">
+								<p class="pb-0 mb-0"> <strong> Btech. in Mechanical Engineering , IIT Bombay - 2020 Batch <br>[ Cpi 8.9/10 ]</strong>
+									<br> I am passionate about learning new things and implement them in the real world. I want to pursue a career in software engineering and have an interest in statistics, data science and machine learning.
+									<br> Look at my work on:
+									<ul class="mt-0">
+										<li><a style="color:black; text-decoration: underline;" target="_blank" href="/tensorJS">Web-app using TensorJS </a></li>
+										<li><a style="color:black; text-decoration: underline;" target="_blank" href="/typingtutorJS">TypingutorJS</a></li>
+									</ul>
+								</p> 
+								<h3 class="mt-3"><a href="mailto:ritik.bilala@gmail.com" class="btn btn-info">Ritik.Bilala@gmail.com</a>
+   <a href="tel:8291339549" class="btn btn-info">(+91)-8291339549</a> <a class="btn btn-success" role="button" target="_blank" href="doc/RitikBilala_2020.pdf">Download Resume</a></h3> </div>
+						</div>
+
+
 					</div>
 				</div>
 			</div>
@@ -109,8 +132,8 @@ https://templatemo.com/tm-530-mini-profile
 								<div>
 									<ul>
 										<li>Introduced Internet of Things on production line at Bangalore plant bridging gaps between machines & operators</li>
-										<li>Worked upon 6 IoT based use-cases for production line and demonstrated POC, communicated to vendors for deployment. <a href="#">View use-cases</a></li>
-										<li><a href="#">Download</a> my summer internship documentation to start IoT from scratch</li>
+										<li>Worked upon 6 IoT based use-cases for production line and demonstrated POC, communicated to vendors for deployment. <a target="_blank" href="doc/usecase.png">View use-cases</a></li>
+										<li><a href="doc/report.pdf">Download</a> my summer internship documentation to start IoT from scratch</li>
 								</div>
 							</p>
 						</div>
@@ -250,11 +273,7 @@ https://templatemo.com/tm-530-mini-profile
 	});
 	</script>
 	<script>
-	$(window).scroll(function() {
-		if($(document).scrollTop() >= 130) {
-			$(".tm-welcome-left").slideDown();
-		}
-	});
+
 	</script>
 </body>
 
