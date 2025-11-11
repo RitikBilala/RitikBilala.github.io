@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ritik Bilala - Product Manager Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="mainNav" class="nav">
+        <div class="nav-container">
+            <div class="nav-brand">Ritik Bilala</div>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#experience" class="nav-link">Experience</a></li>
+                <li><a href="#skills" class="nav-link">Skills</a></li>
+                <li><a href="#projects" class="nav-link">Projects</a></li>
+                <li><a href="#education" class="nav-link">Education</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <button id="adminBtn" class="btn btn--secondary btn--sm">Admin</button>
+        </div>
+    </nav>
+
+    <!-- Portfolio View -->
+    <div id="portfolioView" class="portfolio-view">
+        <!-- Hero Section -->
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title" id="heroName">Ritik Bilala</h1>
+                    <p class="hero-subtitle" id="heroTitle">Product Manager at American Express</p>
+                    <p class="hero-description" id="heroDescription">Building B2B Realtime data sharing products | IIT Bombay Graduate | 4+ Years in Product Management</p>
+                    <div class="hero-contact">
+                        <a href="mailto:Ritik.bilala@gmail.com" id="heroEmail" class="hero-link">Ritik.bilala@gmail.com</a>
+                        <span class="hero-separator">|</span>
+                        <a href="tel:8291339549" id="heroPhone" class="hero-link">8291339549</a>
+                        <span class="hero-separator">|</span>
+                        <a href="https://www.linkedin.com/in/ritikbilala" id="heroLinkedin" target="_blank" class="hero-link">LinkedIn</a>
+                    </div>
+                    <div class="hero-cta">
+                        <a href="#contact" class="btn btn--primary">Get In Touch</a>
+                        <a href="#projects" class="btn btn--outline">View Projects</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="section">
+            <div class="container">
+                <h2 class="section-title">About Me</h2>
+                <div class="about-content">
+                    <div class="about-text" id="aboutText">
+                        <p>As a Product Manager at American Express, I specialize in building B2B real-time data sharing products that enable 20,000+ commercial clients to efficiently manage their expenses. With a strong foundation from IIT Bombay and 4+ years of product management experience, I combine technical expertise with strategic thinking to deliver impactful solutions.</p>
+                        <p>My journey spans from technical content strategy at UpGrad to leading product initiatives at American Express, where I've launched B2B Transaction APIs, uplifted UI/UX for enterprise platforms, and expanded product portfolios. I'm passionate about leveraging data analytics, API strategy, and agile methodologies to create products that drive business value.</p>
+                        <p>Certified as a SAFe® 6 Agile Product Manager, I bring expertise in stakeholder management, user experience design, and data-driven decision making. My technical background in software development, machine learning, and cloud technologies enables me to bridge the gap between business needs and technical implementation.</p>
+                    </div>
+                    <div class="about-stats">
+                        <div class="stat-card">
+                            <div class="stat-number">4+</div>
+                            <div class="stat-label">Years Experience</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">20K+</div>
+                            <div class="stat-label">Clients Impacted</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">10+</div>
+                            <div class="stat-label">Major Projects</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Section -->
+        <section id="experience" class="section section-alt">
+            <div class="container">
+                <h2 class="section-title">Professional Experience</h2>
+                <div id="experienceList" class="timeline"></div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="section">
+            <div class="container">
+                <h2 class="section-title">Skills &amp; Expertise</h2>
+                <div id="skillsList" class="skills-grid"></div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="section section-alt">
+            <div class="container">
+                <h2 class="section-title">Key Projects</h2>
+                <div id="projectsList" class="projects-grid"></div>
+            </div>
+        </section>
+
+        <!-- Education Section -->
+        <section id="education" class="section">
+            <div class="container">
+                <h2 class="section-title">Education &amp; Certifications</h2>
+                <div class="education-content">
+                    <div class="education-card">
+                        <h3 id="eduDegree">B.Tech Mechanical Engineering</h3>
+                        <p class="edu-institution" id="eduInstitution">Indian Institute of Technology Bombay</p>
+                        <p class="edu-duration" id="eduDuration">2016-2020</p>
+                        <div class="edu-details">
+                            <p><strong>CPI:</strong> <span id="eduCpi">8.9/10</span></p>
+                            <p><strong>Minor:</strong> <span id="eduMinor">Electrical Engineering Minor (9.4/10)</span></p>
+                        </div>
+                        <div class="edu-achievements">
+                            <h4>Achievements</h4>
+                            <ul id="eduAchievements">
+                                <li>All India Rank 604 in IIT-JEE Advanced 2016 amongst 0.2 million candidates</li>
+                                <li>Certified SAFe® 6 Agile Product Manager</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="certifications">
+                        <h3>Certifications</h3>
+                        <ul id="certificationsList">
+                            <li>SAFe® 6 Agile Product Manager</li>
+                            <li>Building and Deploying Deep Learning Applications with TensorFlow (LinkedIn)</li>
+                            <li>Machine Learning: Logistic Regression, Discriminant Analysis &amp; KNN (Udemy)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="section">
+            <div class="container">
+                <h2 class="section-title">Get In Touch</h2>
+                <div class="contact-content">
+                    <div class="contact-info">
+                        <h3>Contact Information</h3>
+                        <div class="contact-item">
+                            <strong>Email:</strong>
+                            <a href="mailto:Ritik.bilala@gmail.com" id="contactEmail">Ritik.bilala@gmail.com</a>
+                        </div>
+                        <div class="contact-item">
+                            <strong>Phone:</strong>
+                            <a href="tel:8291339549" id="contactPhone">8291339549</a>
+                        </div>
+                        <div class="contact-item">
+                            <strong>LinkedIn:</strong>
+                            <a href="https://www.linkedin.com/in/ritikbilala" id="contactLinkedin" target="_blank">linkedin.com/in/ritikbilala</a>
+                        </div>
+                        <div class="contact-item">
+                            <strong>Location:</strong>
+                            <span id="contactLocation">Kota, RJ</span>
+                        </div>
+                    </div>
+                    <div class="contact-form">
+                        <h3>Send a Message</h3>
+                        <form id="contactForm">
+                            <div class="form-group">
+                                <label class="form-label" for="formName">Name</label>
+                                <input type="text" id="formName" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="formEmail">Email</label>
+                                <input type="email" id="formEmail" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="formMessage">Message</label>
+                                <textarea id="formMessage" class="form-control" rows="5" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn--primary btn--full-width">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Admin Portal -->
+    <div id="adminView" class="admin-view hidden">
+        <!-- Admin Login -->
+        <div id="adminLogin" class="admin-login">
+            <div class="admin-login-card">
+                <h2>Admin Portal</h2>
+                <p>Enter password to access content management</p>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label" for="adminPassword">Password</label>
+                        <input type="password" id="adminPassword" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn--primary btn--full-width">Login</button>
+                    <p class="login-hint">Default password: admin123</p>
+                </form>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="adminDashboard" class="admin-dashboard hidden">
+            <div class="admin-header">
+                <h1>Portfolio Admin</h1>
+                <div class="admin-actions">
+                    <button id="previewBtn" class="btn btn--secondary">Preview Portfolio</button>
+                    <button id="logoutBtn" class="btn btn--outline">Logout</button>
+                </div>
+            </div>
+
+            <div class="admin-content">
+                <!-- Admin Tabs -->
+                <div class="admin-tabs">
+                    <button class="admin-tab active" data-tab="overview">Overview</button>
+                    <button class="admin-tab" data-tab="personal">Personal Info</button>
+                    <button class="admin-tab" data-tab="about">About</button>
+                    <button class="admin-tab" data-tab="experience">Experience</button>
+                    <button class="admin-tab" data-tab="skills">Skills</button>
+                    <button class="admin-tab" data-tab="projects">Projects</button>
+                    <button class="admin-tab" data-tab="education">Education</button>
+                </div>
+
+                <!-- Overview Tab -->
+                <div class="admin-panel active" data-panel="overview">
+                    <h2>Dashboard Overview</h2>
+                    <div class="dashboard-stats">
+                        <div class="dashboard-card">
+                            <h3>Portfolio Views</h3>
+                            <p class="dashboard-number" id="viewCount">0</p>
+                        </div>
+                        <div class="dashboard-card">
+                            <h3>Work Experience</h3>
+                            <p class="dashboard-number" id="expCount">0</p>
+                        </div>
+                        <div class="dashboard-card">
+                            <h3>Projects</h3>
+                            <p class="dashboard-number" id="projCount">0</p>
+                        </div>
+                        <div class="dashboard-card">
+                            <h3>Skills</h3>
+                            <p class="dashboard-number" id="skillCount">0</p>
+                        </div>
+                    </div>
+                    <div class="dashboard-actions">
+                        <button id="exportBtn" class="btn btn--primary">Export Portfolio Data</button>
+                        <button id="resetBtn" class="btn btn--outline">Reset to Default</button>
+                    </div>
+                </div>
+
+                <!-- Personal Info Tab -->
+                <div class="admin-panel" data-panel="personal">
+                    <h2>Personal Information</h2>
+                    <form id="personalForm" class="admin-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="editName">Full Name</label>
+                                <input type="text" id="editName" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="editTitle">Title</label>
+                                <input type="text" id="editTitle" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="editCompany">Company</label>
+                                <input type="text" id="editCompany" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="editLocation">Location</label>
+                                <input type="text" id="editLocation" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="editEmail">Email</label>
+                                <input type="email" id="editEmail" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="editPhone">Phone</label>
+                                <input type="tel" id="editPhone" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="editLinkedin">LinkedIn URL</label>
+                            <input type="url" id="editLinkedin" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn--primary">Save Changes</button>
+                    </form>
+                </div>
+
+                <!-- About Tab -->
+                <div class="admin-panel" data-panel="about">
+                    <h2>About Section</h2>
+                    <form id="aboutForm" class="admin-form">
+                        <div class="form-group">
+                            <label class="form-label" for="editAbout">About Text</label>
+                            <textarea id="editAbout" class="form-control" rows="12" required></textarea>
+                            <p class="form-hint">Separate paragraphs with double line breaks</p>
+                        </div>
+                        <button type="submit" class="btn btn--primary">Save Changes</button>
+                    </form>
+                </div>
+
+                <!-- Experience Tab -->
+                <div class="admin-panel" data-panel="experience">
+                    <h2>Work Experience</h2>
+                    <button id="addExpBtn" class="btn btn--primary mb-8">Add New Experience</button>
+                    <div id="experienceManager" class="items-manager"></div>
+                </div>
+
+                <!-- Skills Tab -->
+                <div class="admin-panel" data-panel="skills">
+                    <h2>Skills &amp; Expertise</h2>
+                    <button id="addSkillBtn" class="btn btn--primary mb-8">Add New Skill Category</button>
+                    <div id="skillsManager" class="items-manager"></div>
+                </div>
+
+                <!-- Projects Tab -->
+                <div class="admin-panel" data-panel="projects">
+                    <h2>Projects</h2>
+                    <button id="addProjectBtn" class="btn btn--primary mb-8">Add New Project</button>
+                    <div id="projectsManager" class="items-manager"></div>
+                </div>
+
+                <!-- Education Tab -->
+                <div class="admin-panel" data-panel="education">
+                    <h2>Education &amp; Certifications</h2>
+                    <form id="educationForm" class="admin-form">
+                        <h3>Education Details</h3>
+                        <div class="form-group">
+                            <label class="form-label" for="editDegree">Degree</label>
+                            <input type="text" id="editDegree" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="editInstitution">Institution</label>
+                            <input type="text" id="editInstitution" class="form-control" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="editDuration">Duration</label>
+                                <input type="text" id="editDuration" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="editCpi">CPI</label>
+                                <input type="text" id="editCpi" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="editMinor">Minor Details</label>
+                            <input type="text" id="editMinor" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="editAchievements">Achievements (one per line)</label>
+                            <textarea id="editAchievements" class="form-control" rows="4"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn--primary">Save Education</button>
+                    </form>
+
+                    <div class="mt-8">
+                        <h3>Certifications</h3>
+                        <button id="addCertBtn" class="btn btn--secondary mb-8">Add Certification</button>
+                        <div id="certificationsManager" class="items-manager"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
