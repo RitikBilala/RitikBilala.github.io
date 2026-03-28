@@ -532,24 +532,6 @@
     </div>
   </footer>
 
-<div id="assistant-wrapper" style="position:fixed; bottom:20px; right:20px; z-index:10000; font-family: 'Satoshi', sans-serif; display: flex; flex-direction: column; align-items: flex-end;">
-    
-    <button id="end-btn" style="display:none; background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 10px; cursor: pointer; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); transition: all 0.2s;">
-        End Session
-    </button>
-
-    <div id="ai-status" style="display:none; background: rgba(0,0,0,0.9); color: white; padding: 8px 16px; border-radius: 20px; font-size: 13px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1);">
-        Connecting...
-    </div>
-
-    <canvas id="audio-visualizer" width="140" height="50" style="display:none; margin-bottom: 10px;"></canvas>
-
-    <div id="ai-trigger" style="width:60px; height:60px; background:#6366f1; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(99,102,241,0.4);">
-        <div id="pulse-ring" style="position:absolute; width:60px; height:60px; border-radius:50%; background:#6366f1; opacity:0.5;"></div>
-        <span id="ai-icon" style="font-size:24px; z-index:2;">🎙️</span>
-    </div>
-</div>
-
   <!-- ======== SCRIPTS ======== -->
   <script>
     // Theme toggle
@@ -614,56 +596,120 @@
     });
   </script>
 
+  <!-- ======== VOICE ASSISTANT ======== -->
+  <div class="voice-assistant-wrapper">
+    <button id="voice-assistant-btn" class="voice-btn" aria-label="Toggle Voice Assistant">
+      <div class="voice-btn-ring"></div>
+      <div class="voice-btn-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+          <line x1="12" y1="19" x2="12" y2="22"></line>
+        </svg>
+      </div>
+    </button>
+    <div id="voice-assistant-status" class="voice-status">Ask AI</div>
+  </div>
 
-<script type="module">
-    const trigger = document.getElementById('ai-trigger');
-    const status = document.getElementById('ai-status');
-    let socket, audioCtx, stream, nextStartTime = 0;
-
-    // Function to play AI voice chunks
-    async function playChunk(base64) {
-        if (!audioCtx) audioCtx = new AudioContext();
-        const buffer = await audioCtx.decodeAudioData(Uint8Array.from(atob(base64), c => c.charCodeAt(0)).buffer);
-        const source = audioCtx.createBufferSource();
-        source.buffer = buffer;
-        source.connect(audioCtx.destination);
-        const start = Math.max(audioCtx.currentTime, nextStartTime);
-        source.start(start);
-        nextStartTime = start + buffer.duration;
+  <style>
+    .voice-assistant-wrapper {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      z-index: 1000;
+    }
+    
+    .voice-btn {
+      position: relative;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0a7c83, #15b3bc);
+      border: none;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(10, 124, 131, 0.4);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    .voice-btn:hover {
+      transform: scale(1.1);
+    }
+    
+    .voice-btn-icon {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .voice-btn-ring {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: inherit;
+      z-index: 1;
+      opacity: 0;
+    }
+    
+    .voice-btn.active .voice-btn-ring {
+      animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    }
+    
+    .voice-btn.active {
+      background: linear-gradient(135deg, #e53935, #ff5252);
+      box-shadow: 0 8px 24px rgba(229, 57, 53, 0.4);
+      animation: float 3s ease-in-out infinite;
     }
 
-    async function startAssistant() {
-        try {
-            status.innerText = "Connecting...";
-            status.style.display = "block";
-            
-            // 1. Get Mic Access
-            stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            
-            // 2. Connect to your Worker (REPLACE WITH YOUR ACTUAL URL)
-            socket = new WebSocket("wss://voice-talk.ritik-bilala.workers.dev/");
-
-            socket.onmessage = async (e) => {
-                const msg = JSON.parse(e.data);
-                // Extract audio from Gemini's response format
-                const audioData = msg.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data;
-                if (audioData) {
-                    status.innerText = "Assistant is speaking...";
-                    await playChunk(audioData);
-                }
-            };
-
-            socket.onopen = () => { status.innerText = "I'm listening..."; };
-            socket.onclose = () => { status.innerText = "Session Ended"; };
-
-        } catch (err) {
-            status.innerText = "Error: Mic access denied or connection failed.";
-        }
+    .voice-status {
+      background: rgba(10, 124, 131, 0.1);
+      color: var(--text-color, #333);
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border: 1px solid rgba(10, 124, 131, 0.2);
+    }
+    
+    html[data-theme="dark"] .voice-status {
+      color: rgba(255,255,255,0.9);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .voice-btn.active + .voice-status {
+      background: rgba(229, 57, 53, 0.1);
+      border-color: rgba(229, 57, 53, 0.2);
     }
 
-    trigger.onclick = startAssistant;
-</script>
+    @keyframes pulse-ring {
+      0% {
+        transform: scale(1);
+        opacity: 0.8;
+      }
+      100% {
+        transform: scale(1.6);
+        opacity: 0;
+      }
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1.05); }
+      50% { transform: translateY(-5px) scale(1.05); }
+    }
+  </style>
 
-
+  <script src="./voice-assistant.js"></script>
 </body>
 </html>
