@@ -617,103 +617,51 @@
 
 <script type="module">
     const trigger = document.getElementById('ai-trigger');
-    const endBtn = document.getElementById('end-btn');
-    const ring = document.getElementById('pulse-ring');
     const status = document.getElementById('ai-status');
-    const icon = document.getElementById('ai-icon');
-    const canvas = document.getElementById('audio-visualizer');
-    const ctx = canvas.getContext('2d');
+    let socket, audioCtx, stream, nextStartTime = 0;
 
-    let socket, audioCtx, analyser, dataArray, source, animationId, stream;
-    let isBusy = false;
-
-    // --- Audio Visualizer ---
-    function startVisualizer() {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        analyser = audioCtx.createAnalyser();
-        source = audioCtx.createMediaStreamSource(stream);
-        source.connect(analyser);
-        analyser.fftSize = 64;
-        dataArray = new Uint8Array(analyser.frequencyBinCount);
-        canvas.style.display = 'block';
-        draw();
+    // Function to play AI voice chunks
+    async function playChunk(base64) {
+        if (!audioCtx) audioCtx = new AudioContext();
+        const buffer = await audioCtx.decodeAudioData(Uint8Array.from(atob(base64), c => c.charCodeAt(0)).buffer);
+        const source = audioCtx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(audioCtx.destination);
+        const start = Math.max(audioCtx.currentTime, nextStartTime);
+        source.start(start);
+        nextStartTime = start + buffer.duration;
     }
 
-    function draw() {
-        animationId = requestAnimationFrame(draw);
-        analyser.getByteFrequencyData(dataArray);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const barWidth = (canvas.width / dataArray.length) * 2;
-        let x = 0;
-        for (let i = 0; i < dataArray.length; i++) {
-            const barHeight = (dataArray[i] / 255) * canvas.height;
-            ctx.fillStyle = '#6366f1'; 
-            ctx.fillRect(x, canvas.height - barHeight, barWidth - 2, barHeight);
-            x += barWidth;
-        }
-    }
-
-    // --- Assistant Controller ---
-    async function toggleAssistant() {
-        if (isBusy) return; // Prevent multiple clicks during connection
-
+    async function startAssistant() {
         try {
-            updateUI('Requesting Mic...');
+            status.innerText = "Connecting...";
+            status.style.display = "block";
+            
+            // 1. Get Mic Access
             stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             
-            updateUI('Connecting...', 'active');
-            socket = new WebSocket("wss://voice-talk.ritik-bilala.workers.dev/ws"); // REPLACE with your worker URL
+            // 2. Connect to your Worker (REPLACE WITH YOUR ACTUAL URL)
+            socket = new WebSocket("wss://voice-talk.ritik-bilala.workers.dev/");
 
-            socket.onopen = () => {
-                startVisualizer();
-                isBusy = true;
-                endBtn.style.display = 'block'; // Show END button
-                updateUI('I am listening...', 'active');
-                
-                // Safety 5-min timer to protect credits
-                setTimeout(() => { if(isBusy) stopAssistant(); }, 300000);
-            };
-
-            socket.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                if (data.audio) {
-                    // Logic to play assistant audio would go here
+            socket.onmessage = async (e) => {
+                const msg = JSON.parse(e.data);
+                // Extract audio from Gemini's response format
+                const audioData = msg.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data;
+                if (audioData) {
+                    status.innerText = "Assistant is speaking...";
+                    await playChunk(audioData);
                 }
             };
 
-            socket.onclose = () => stopAssistant();
-            socket.onerror = () => updateUI('Proxy Error', 'error');
+            socket.onopen = () => { status.innerText = "I'm listening..."; };
+            socket.onclose = () => { status.innerText = "Session Ended"; };
 
         } catch (err) {
-            updateUI('Mic Denied', 'error');
+            status.innerText = "Error: Mic access denied or connection failed.";
         }
     }
 
-    function updateUI(msg, state = 'default') {
-        status.innerText = msg;
-        status.style.display = msg ? 'block' : 'none';
-        if (state === 'active') {
-            ring.classList.add('animating');
-            icon.innerText = '●'; // Visual cue for "Recording"
-        } else {
-            ring.classList.remove('animating');
-            icon.innerText = '🎙️';
-        }
-    }
-
-    function stopAssistant() {
-        isBusy = false;
-        endBtn.style.display = 'none'; // Hide END button
-        if (socket) socket.close();
-        if (audioCtx) audioCtx.close();
-        cancelAnimationFrame(animationId);
-        canvas.style.display = 'none';
-        if (stream) stream.getTracks().forEach(track => track.stop());
-        updateUI('', 'default');
-    }
-
-    trigger.onclick = toggleAssistant;
-    endBtn.onclick = stopAssistant; // Dedicated end trigger
+    trigger.onclick = startAssistant;
 </script>
 
 
