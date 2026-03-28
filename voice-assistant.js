@@ -17,6 +17,7 @@ class VoiceAssistant {
     this.analyserNode = null;
     this.analyserData = null;
     this.animFrameId = null;
+    this.lastUserSpeechTime = 0;
 
     // DOM refs
     this.btn = document.getElementById("voice-assistant-btn");
@@ -131,6 +132,27 @@ class VoiceAssistant {
           this.bars[b].style.animationPlayState = "paused";
         } else {
           this.bars[b].style.animationPlayState = "running";
+        }
+      }
+
+      // ─── Status Text Logic (Thinking vs Listening) ───
+      const currentStatus = this.statusText ? this.statusText.textContent : "";
+      
+      // Increased threshold to 0.15 so continuous fan/room noise doesn't register as speech
+      if (avgLevel > 0.15) {
+        this.lastUserSpeechTime = Date.now();
+        
+        // Return to listening if we were thinking, unless AI is actively speaking
+        if (currentStatus === "Thinking\u2026") {
+           this.updateStatus("Listening\u2026");
+        }
+      } else {
+        // If it's been quiet for 400ms and we are in "Listening...", switch to "Thinking..."
+        if (
+           Date.now() - this.lastUserSpeechTime > 400 && 
+           currentStatus === "Listening\u2026"
+        ) {
+           this.updateStatus("Thinking\u2026");
         }
       }
 
