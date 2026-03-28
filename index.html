@@ -532,6 +532,24 @@
     </div>
   </footer>
 
+<div id="assistant-wrapper" style="position:fixed; bottom:20px; right:20px; z-index:10000; font-family: 'Satoshi', sans-serif; display: flex; flex-direction: column; align-items: flex-end;">
+    
+    <button id="end-btn" style="display:none; background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 10px; cursor: pointer; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); transition: all 0.2s;">
+        End Session
+    </button>
+
+    <div id="ai-status" style="display:none; background: rgba(0,0,0,0.9); color: white; padding: 8px 16px; border-radius: 20px; font-size: 13px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1);">
+        Connecting...
+    </div>
+
+    <canvas id="audio-visualizer" width="140" height="50" style="display:none; margin-bottom: 10px;"></canvas>
+
+    <div id="ai-trigger" style="width:60px; height:60px; background:#6366f1; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(99,102,241,0.4);">
+        <div id="pulse-ring" style="position:absolute; width:60px; height:60px; border-radius:50%; background:#6366f1; opacity:0.5;"></div>
+        <span id="ai-icon" style="font-size:24px; z-index:2;">🎙️</span>
+    </div>
+</div>
+
   <!-- ======== SCRIPTS ======== -->
   <script>
     // Theme toggle
@@ -595,6 +613,109 @@
       });
     });
   </script>
+
+
+<script type="module">
+    const trigger = document.getElementById('ai-trigger');
+    const endBtn = document.getElementById('end-btn');
+    const ring = document.getElementById('pulse-ring');
+    const status = document.getElementById('ai-status');
+    const icon = document.getElementById('ai-icon');
+    const canvas = document.getElementById('audio-visualizer');
+    const ctx = canvas.getContext('2d');
+
+    let socket, audioCtx, analyser, dataArray, source, animationId, stream;
+    let isBusy = false;
+
+    // --- Audio Visualizer ---
+    function startVisualizer() {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        source = audioCtx.createMediaStreamSource(stream);
+        source.connect(analyser);
+        analyser.fftSize = 64;
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
+        canvas.style.display = 'block';
+        draw();
+    }
+
+    function draw() {
+        animationId = requestAnimationFrame(draw);
+        analyser.getByteFrequencyData(dataArray);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const barWidth = (canvas.width / dataArray.length) * 2;
+        let x = 0;
+        for (let i = 0; i < dataArray.length; i++) {
+            const barHeight = (dataArray[i] / 255) * canvas.height;
+            ctx.fillStyle = '#6366f1'; 
+            ctx.fillRect(x, canvas.height - barHeight, barWidth - 2, barHeight);
+            x += barWidth;
+        }
+    }
+
+    // --- Assistant Controller ---
+    async function toggleAssistant() {
+        if (isBusy) return; // Prevent multiple clicks during connection
+
+        try {
+            updateUI('Requesting Mic...');
+            stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            
+            updateUI('Connecting...', 'active');
+            socket = new WebSocket("wss://voice-talk.ritik-bilala.workers.dev/ws"); // REPLACE with your worker URL
+
+            socket.onopen = () => {
+                startVisualizer();
+                isBusy = true;
+                endBtn.style.display = 'block'; // Show END button
+                updateUI('I am listening...', 'active');
+                
+                // Safety 5-min timer to protect credits
+                setTimeout(() => { if(isBusy) stopAssistant(); }, 300000);
+            };
+
+            socket.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.audio) {
+                    // Logic to play assistant audio would go here
+                }
+            };
+
+            socket.onclose = () => stopAssistant();
+            socket.onerror = () => updateUI('Proxy Error', 'error');
+
+        } catch (err) {
+            updateUI('Mic Denied', 'error');
+        }
+    }
+
+    function updateUI(msg, state = 'default') {
+        status.innerText = msg;
+        status.style.display = msg ? 'block' : 'none';
+        if (state === 'active') {
+            ring.classList.add('animating');
+            icon.innerText = '●'; // Visual cue for "Recording"
+        } else {
+            ring.classList.remove('animating');
+            icon.innerText = '🎙️';
+        }
+    }
+
+    function stopAssistant() {
+        isBusy = false;
+        endBtn.style.display = 'none'; // Hide END button
+        if (socket) socket.close();
+        if (audioCtx) audioCtx.close();
+        cancelAnimationFrame(animationId);
+        canvas.style.display = 'none';
+        if (stream) stream.getTracks().forEach(track => track.stop());
+        updateUI('', 'default');
+    }
+
+    trigger.onclick = toggleAssistant;
+    endBtn.onclick = stopAssistant; // Dedicated end trigger
+</script>
+
 
 </body>
 </html>
