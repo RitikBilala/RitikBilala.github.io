@@ -86,18 +86,20 @@ class VoiceAssistant {
           }
         }));
         
-        // Initial greeting
+        // Initial greeting trigger (hidden from user voice)
         setTimeout(() => {
-          this.ws.send(JSON.stringify({
-            clientContent: {
-              turns: [{
-                role: "user",
-                parts: [{ text: "Hello! Please provide a very brief, friendly welcome greeting." }]
-              }],
-              turnComplete: true
-            }
-          }));
-        }, 500);
+          if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            this.ws.send(JSON.stringify({
+              clientContent: {
+                turns: [{
+                  role: "user",
+                  parts: [{ text: "Hello! I have just opened the chat. Please introduce yourself briefly as Ritik's AI assistant and ask how you can help." }]
+                }],
+                turnComplete: true
+              }
+            }));
+          }
+        }, 800);
       };
 
       this.processorNode.port.onmessage = (event) => {
