@@ -82,6 +82,14 @@ class VoiceAssistant {
             model: "models/gemini-2.0-flash-exp",
             generationConfig: {
               responseModalities: ["audio"]
+            },
+            // VAD (Voice Activity Detection): AI listens and replies automatically!
+            turnSelection: {
+              server_vad: {
+                threshold: 0.5,
+                noise_threshold: 0.1,
+                prefix_padding_ms: 300
+              }
             }
           }
         }));
@@ -89,17 +97,14 @@ class VoiceAssistant {
         // Initial greeting trigger (hidden from user voice)
         setTimeout(() => {
           if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            // We use 'userContent' for the initial greeting to force an immediate response
             this.ws.send(JSON.stringify({
-              clientContent: {
-                turns: [{
-                  role: "user",
-                  parts: [{ text: "Hello! I have just opened the chat. Please introduce yourself briefly as Ritik's AI assistant and ask how you can help." }]
-                }],
-                turnComplete: true
+              userContent: {
+                parts: [{ text: "Hello! Please introduce yourself briefly as Ritik's Assistant and ask how you can help." }]
               }
             }));
           }
-        }, 800);
+        }, 400);
       };
 
       this.processorNode.port.onmessage = (event) => {
