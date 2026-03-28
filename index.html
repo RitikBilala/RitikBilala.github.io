@@ -597,21 +597,51 @@
   </script>
 
   <!-- ======== VOICE ASSISTANT ======== -->
-  <div class="voice-assistant-wrapper">
+  <div class="voice-assistant-wrapper" id="voice-assistant-wrapper">
+    <!-- Main FAB button -->
     <button id="voice-assistant-btn" class="voice-btn" aria-label="Toggle Voice Assistant">
+      <!-- Audio level visualizer rings (visible when active) -->
+      <div class="voice-btn-level-ring voice-btn-level-ring--1"></div>
+      <div class="voice-btn-level-ring voice-btn-level-ring--2"></div>
+      <div class="voice-btn-level-ring voice-btn-level-ring--3"></div>
+      <!-- Pulse ring -->
       <div class="voice-btn-ring"></div>
-      <div class="voice-btn-icon">
+      <!-- Icon -->
+      <div class="voice-btn-icon" id="voice-btn-icon">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
           <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
           <line x1="12" y1="19" x2="12" y2="22"></line>
         </svg>
       </div>
+      <!-- Audio bars visualizer (inside button, visible when active) -->
+      <div class="voice-audio-bars" id="voice-audio-bars">
+        <span class="voice-bar"></span>
+        <span class="voice-bar"></span>
+        <span class="voice-bar"></span>
+        <span class="voice-bar"></span>
+        <span class="voice-bar"></span>
+      </div>
     </button>
-    <div id="voice-assistant-status" class="voice-status">Ask AI</div>
+
+    <!-- Status label -->
+    <div id="voice-assistant-status" class="voice-status">
+      <span class="voice-status-dot"></span>
+      <span id="voice-status-text">Ask Ritik's AI</span>
+    </div>
+
+    <!-- End Session button (hidden by default, shown when active) -->
+    <button id="voice-end-btn" class="voice-end-btn" aria-label="End voice session">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+      End Session
+    </button>
   </div>
 
   <style>
+    /* ======== VOICE ASSISTANT — CORE LAYOUT ======== */
     .voice-assistant-wrapper {
       position: fixed;
       bottom: 2rem;
@@ -622,11 +652,12 @@
       gap: 0.5rem;
       z-index: 1000;
     }
-    
+
+    /* ======== FAB BUTTON ======== */
     .voice-btn {
       position: relative;
-      width: 60px;
-      height: 60px;
+      width: 64px;
+      height: 64px;
       border-radius: 50%;
       background: linear-gradient(135deg, #0a7c83, #15b3bc);
       border: none;
@@ -635,19 +666,92 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 8px 24px rgba(10, 124, 131, 0.4);
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 8px 32px rgba(10, 124, 131, 0.45), 0 0 0 0 rgba(10, 124, 131, 0);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                  box-shadow 0.3s ease,
+                  background 0.4s ease;
+      overflow: visible;
     }
-    
+
     .voice-btn:hover {
       transform: scale(1.1);
+      box-shadow: 0 12px 40px rgba(10, 124, 131, 0.55), 0 0 0 4px rgba(10, 124, 131, 0.15);
     }
-    
+
     .voice-btn-icon {
       position: relative;
-      z-index: 2;
+      z-index: 3;
+      transition: opacity 0.2s ease, transform 0.2s ease;
     }
-    
+
+    /* ======== AUDIO BARS VISUALIZER ======== */
+    .voice-audio-bars {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      z-index: 3;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .voice-btn.active .voice-audio-bars {
+      opacity: 1;
+    }
+
+    .voice-btn.active .voice-btn-icon {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+
+    .voice-bar {
+      width: 4px;
+      border-radius: 4px;
+      background: white;
+      height: 8px;
+      min-height: 4px;
+      max-height: 32px;
+      transition: height 0.06s ease-out;
+      will-change: height;
+    }
+
+    /* Idle animation for bars when active but no audio */
+    .voice-btn.active .voice-bar:nth-child(1) { animation: bar-idle 1.2s ease-in-out 0s infinite; }
+    .voice-btn.active .voice-bar:nth-child(2) { animation: bar-idle 1.2s ease-in-out 0.15s infinite; }
+    .voice-btn.active .voice-bar:nth-child(3) { animation: bar-idle 1.2s ease-in-out 0.3s infinite; }
+    .voice-btn.active .voice-bar:nth-child(4) { animation: bar-idle 1.2s ease-in-out 0.45s infinite; }
+    .voice-btn.active .voice-bar:nth-child(5) { animation: bar-idle 1.2s ease-in-out 0.6s infinite; }
+
+    @keyframes bar-idle {
+      0%, 100% { height: 8px; }
+      50% { height: 16px; }
+    }
+
+    /* ======== LEVEL RINGS — REACTIVE TO AUDIO ======== */
+    .voice-btn-level-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      border: 2px solid rgba(229, 57, 53, 0);
+      pointer-events: none;
+      z-index: 0;
+      transition: transform 0.12s ease-out, border-color 0.12s ease-out, opacity 0.12s ease-out;
+      opacity: 0;
+    }
+
+    .voice-btn.active .voice-btn-level-ring {
+      border-color: rgba(255, 100, 100, 0.35);
+      opacity: 1;
+    }
+
+    /* ======== PULSE RING ======== */
     .voice-btn-ring {
       position: absolute;
       top: 0;
@@ -658,55 +762,189 @@
       background: inherit;
       z-index: 1;
       opacity: 0;
+      pointer-events: none;
     }
-    
+
     .voice-btn.active .voice-btn-ring {
-      animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+      animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
     }
-    
+
+    /* ======== ACTIVE STATE ======== */
     .voice-btn.active {
       background: linear-gradient(135deg, #e53935, #ff5252);
-      box-shadow: 0 8px 24px rgba(229, 57, 53, 0.4);
-      animation: float 3s ease-in-out infinite;
+      box-shadow: 0 8px 32px rgba(229, 57, 53, 0.45), 0 0 0 0 rgba(229, 57, 53, 0);
     }
 
+    .voice-btn.active:hover {
+      box-shadow: 0 12px 40px rgba(229, 57, 53, 0.55), 0 0 0 4px rgba(229, 57, 53, 0.15);
+    }
+
+    /* ======== STATUS LABEL ======== */
     .voice-status {
-      background: rgba(10, 124, 131, 0.1);
-      color: var(--text-color, #333);
-      padding: 0.25rem 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--color-surface, #fff);
+      color: var(--color-text, #333);
+      padding: 0.35rem 0.85rem;
       border-radius: 20px;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 600;
-      backdrop-filter: blur(4px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      border: 1px solid rgba(10, 124, 131, 0.2);
-    }
-    
-    html[data-theme="dark"] .voice-status {
-      color: rgba(255,255,255,0.9);
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-    
-    .voice-btn.active + .voice-status {
-      background: rgba(229, 57, 53, 0.1);
-      border-color: rgba(229, 57, 53, 0.2);
+      font-family: var(--font-body, 'Satoshi', sans-serif);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      border: 1px solid var(--color-divider, rgba(10, 124, 131, 0.2));
+      transition: all 0.3s ease;
     }
 
+    .voice-status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-primary, #0a7c83);
+      flex-shrink: 0;
+    }
+
+    html[data-theme="dark"] .voice-status {
+      background: var(--color-surface, rgba(22, 25, 33, 0.9));
+      color: rgba(255,255,255,0.9);
+      border: 1px solid var(--color-divider, rgba(255,255,255,0.1));
+    }
+
+    .voice-btn.active ~ .voice-status {
+      border-color: rgba(229, 57, 53, 0.3);
+    }
+
+    .voice-btn.active ~ .voice-status .voice-status-dot {
+      background: #ff5252;
+      animation: dot-blink 1.5s ease-in-out infinite;
+    }
+
+    @keyframes dot-blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* ======== END SESSION BUTTON ======== */
+    .voice-end-btn {
+      display: none;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.4rem 1rem;
+      border: none;
+      border-radius: 20px;
+      background: rgba(229, 57, 53, 0.1);
+      color: #e53935;
+      font-size: 0.75rem;
+      font-weight: 700;
+      font-family: var(--font-body, 'Satoshi', sans-serif);
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(229, 57, 53, 0.2);
+    }
+
+    .voice-end-btn.visible {
+      display: flex;
+      animation: fade-up 0.3s ease forwards;
+    }
+
+    .voice-end-btn:hover {
+      background: rgba(229, 57, 53, 0.2);
+      border-color: rgba(229, 57, 53, 0.4);
+      transform: scale(1.05);
+    }
+
+    html[data-theme="dark"] .voice-end-btn {
+      background: rgba(255, 82, 82, 0.15);
+      color: #ff8a80;
+      border-color: rgba(255, 82, 82, 0.25);
+    }
+
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ======== KEYFRAME ANIMATIONS ======== */
     @keyframes pulse-ring {
       0% {
         transform: scale(1);
-        opacity: 0.8;
+        opacity: 0.6;
       }
       100% {
-        transform: scale(1.6);
+        transform: scale(1.8);
         opacity: 0;
       }
     }
-    
-    @keyframes float {
-      0%, 100% { transform: translateY(0) scale(1.05); }
-      50% { transform: translateY(-5px) scale(1.05); }
+
+    /* ======== MOBILE PROMINENCE ======== */
+    @media (max-width: 768px) {
+      .voice-assistant-wrapper {
+        bottom: 1.25rem;
+        right: 1.25rem;
+        gap: 0.4rem;
+      }
+
+      .voice-btn {
+        width: 64px;
+        height: 64px;
+        box-shadow: 0 10px 40px rgba(10, 124, 131, 0.5), 0 0 0 3px rgba(10, 124, 131, 0.12);
+      }
+
+      .voice-btn.active {
+        box-shadow: 0 10px 40px rgba(229, 57, 53, 0.5), 0 0 0 3px rgba(229, 57, 53, 0.12);
+      }
+
+      /* Persistent mobile banner for AI assistant */
+      .voice-assistant-wrapper::before {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        right: -8px;
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(10, 124, 131, 0.12) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: -1;
+      }
+
+      /* Initial attention-grabbing animation on mobile */
+      .voice-btn:not(.active) {
+        animation: mobile-attention 4s ease-in-out infinite;
+      }
+
+      @keyframes mobile-attention {
+        0%, 85%, 100% { box-shadow: 0 10px 40px rgba(10, 124, 131, 0.5), 0 0 0 3px rgba(10, 124, 131, 0.12); }
+        90% { box-shadow: 0 10px 40px rgba(10, 124, 131, 0.6), 0 0 0 8px rgba(10, 124, 131, 0.08); }
+        95% { box-shadow: 0 10px 40px rgba(10, 124, 131, 0.5), 0 0 0 3px rgba(10, 124, 131, 0.12); }
+      }
+
+      .voice-status {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.7rem;
+      }
+
+      .voice-end-btn {
+        font-size: 0.7rem;
+        padding: 0.35rem 0.85rem;
+      }
+    }
+
+    /* Extra small screens — move the FAB to be more centered and prominent */
+    @media (max-width: 480px) {
+      .voice-assistant-wrapper {
+        bottom: 1rem;
+        right: 50%;
+        transform: translateX(50%);
+      }
+
+      .voice-btn {
+        width: 60px;
+        height: 60px;
+      }
     }
   </style>
 
