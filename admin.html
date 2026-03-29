@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Assistant Logs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .chat-user { background-color: #dcf8c6; text-align: right; margin-left: auto; border-radius: 10px 0 10px 10px; }
+        .chat-model { background-color: #f1f0f0; text-align: left; margin-right: auto; border-radius: 0 10px 10px 10px; }
+    </style>
+</head>
+<body class="bg-gray-50 p-4 md:p-8 font-sans">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6 text-gray-800">Voice Assistant Transcripts</h1>
+        
+        <div id="login-section" class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-8">
+            <h2 class="text-lg font-semibold mb-4 text-gray-700">Database Authentication</h2>
+            <div class="flex flex-col md:flex-row gap-4">
+                <input type="password" id="secretKey" placeholder="Enter session password (ADMIN_SECRET)" class="border p-2 rounded flex-1">
+                <button onclick="fetchLogs()" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 font-medium">Load Logs</button>
+            </div>
+        </div>
+
+        <div id="logs-container" class="hidden">
+            <div id="stats" class="mb-4 text-gray-600 font-medium"></div>
+            <div id="sessions-list" class="space-y-6"></div>
+            
+            <div class="mt-8 flex justify-center items-center gap-4">
+                <button onclick="changePage(-1)" id="prevBtn" class="bg-gray-200 text-gray-700 px-4 py-2 rounded font-medium disabled:opacity-50">Previous</button>
+                <span id="page-indicator" class="py-2 text-gray-600 font-medium whitespace-nowrap">Page 1</span>
+                <button onclick="changePage(1)" id="nextBtn" class="bg-gray-200 text-gray-700 px-4 py-2 rounded font-medium disabled:opacity-50">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        let totalPages = 1;
+        
+        // Background worker URL hardcoded
+        const baseUrl = 'https://voice-talk.ritik-bilala.workers.dev';
+
+        async function fetchLogs(page = 1) {
+            const secret = document.getElementById('secretKey').value;
+            if (!secret) return alert('Please enter your ADMIN_SECRET password');
+
+            document.getElementById('sessions-list').innerHTML = '<p class="text-gray-500 animate-pulse">Fetching records...</p>';
+            document.getElementById('logs-container').classList.remove('hidden');
+
+            try {
+                // Safely hit the API
+                const response = await fetch(`${baseUrl}/api/logs?page=${page}`, {
+                    headers: { 'Authorization': `Bearer ${secret}` }
+                });
+
+                if (!response.ok) {
+                    let errStr = `HTTP ${response.status}`;
+                    try { const errJson = await response.json(); errStr = errJson.error || errStr; } catch(e){}
+                    throw new Error(errStr);
+                }
+                
+                const data = await response.json();
+                currentPage = data.page;
+                totalPages = Math.ceil(data.total / data.limit) || 1;
+                
+                renderLogs(data);
+            } catch (error) {
+                document.getElementById('sessions-list').innerHTML = `<div class="bg-red-50 text-red-600 p-4 rounded border border-red-200">Connection Error: ${error.message}</div>`;
+            }
+        }
+
+        function renderLogs(data) {
+            document.getElementById('stats').innerText = `Total Sessions: ${data.total}`;
+            document.getElementById('page-indicator').innerText = `Page ${data.page} of ${totalPages}`;
+            document.getElementById('prevBtn').disabled = data.page <= 1;
+            document.getElementById('nextBtn').disabled = data.page >= totalPages;
+
+            const list = document.getElementById('sessions-list');
+            list.innerHTML = '';
+
+            if (data.logs.length === 0) {
+                list.innerHTML = '<p class="text-gray-500 italic py-8 text-center bg-white rounded border border-gray-200">No sessions found in the database.</p>';
+                return;
+            }
+
+            data.logs.forEach(session => {
+                let transcripts = [];
+                try {
+                    transcripts = typeof session.transcripts === 'string' ? JSON.parse(session.transcripts) : session.transcripts;
+                } catch(e) {}
+
+                const date = new Date(session.created_at).toLocaleString();
+                
+                let chatHtml = (transcripts || []).map(msg => {
+                    const bgClass = msg.role === 'user' ? 'chat-user' : 'chat-model';
+                    const sender = msg.role === 'model' ? 'Natasha (AI)' : 'Visitor';
+                    return `
+                        <div class="mb-3 w-fit max-w-[85%] ${bgClass} p-3 shadow-sm text-sm border border-gray-100">
+                            <strong class="block text-[10px] uppercase tracking-wider text-gray-500 opacity-70 mb-1">${sender}</strong>
+                            <span class="text-gray-800 leading-relaxed">${msg.text.replace(/\\n/g, '<br>')}</span>
+                        </div>
+                    `;
+                }).join('');
+
+                list.innerHTML += `
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 transition-all hover:bg-gray-50">
+                        <div class="p-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between sm:items-center cursor-pointer gap-2" onclick="toggleDetails('${session.session_id}')">
+                            <div>
+                                <span class="font-bold text-sm text-gray-700 font-mono">ID: ${session.session_id.substring(0,8)}</span>
+                                <span class="text-xs text-gray-500 sm:ml-4 block sm:inline">${date}</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="text-[11px] font-semibold bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full border border-blue-100">
+                                    ${session.token_count || 0} Tokens
+                                </div>
+                            </div>
+                        </div>
+                        <div id="details-${session.session_id}" class="p-6 bg-gradient-to-b from-gray-50 to-white hidden border-t border-gray-100">
+                            ${chatHtml || '<p class="text-gray-400 italic text-center text-sm py-4">No transcript recorded for this session.</p>'}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function toggleDetails(id) {
+            const el = document.getElementById(`details-${id}`);
+            el.classList.toggle('hidden');
+        }
+
+        function changePage(delta) {
+            if (currentPage + delta > 0 && currentPage + delta <= totalPages) {
+                fetchLogs(currentPage + delta);
+            }
+        }
+    </script>
+</body>
+</html>
